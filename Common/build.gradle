@@ -1,0 +1,46 @@
+apply plugin: 'com.android.library'
+
+def projeInfo = rootProject.ext.android
+def libInfo = rootProject.ext.dependencies
+
+android {
+    compileSdkVersion projeInfo.compileSdkVersion
+    buildToolsVersion projeInfo.buildToolsVersion
+
+    defaultConfig {
+
+        minSdkVersion projeInfo.minSdkVersion
+        targetSdkVersion projeInfo.targetSdkVersion
+        versionCode projeInfo.versionCode
+        versionName projeInfo.versionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    libInfo.appcompa
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    api libInfo.arouter
+    annotationProcessor libInfo.aroutercompiler
+
+}
