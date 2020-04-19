@@ -42,5 +42,15 @@ dependencies {
 
     api libInfo.arouter
     annotationProcessor libInfo.aroutercompiler
-
+    api libInfo.retrofit
+    api libInfo.retrofitgson
+    api libInfo.retrofitrxjava
+    api libInfo.gson
+    api libInfo.rxandroid
+    api libInfo.rxjava
+    api libInfo.okhttplog
+    api libInfo.glide
+    api libInfo.disklru
+    api 'com.alibaba:fastjson:1.1.70.android'
+    api 'com.alibaba:fastjson:1.2.55'
 }
