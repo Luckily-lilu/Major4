@@ -42,6 +42,9 @@ dependencies {
     if (isNeedHomeMoudle.toBoolean()){
         implementation project(path: ':Home')
     }
+    if (isNeedUserMoudle.toBoolean()){
+        implementation project(path: ':User')
+    }
     implementation project(path: ':Common')
     implementation 'androidx.appcompat:appcompat:1.1.0'
 }
