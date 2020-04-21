@@ -24,7 +24,8 @@ ext{
             okhttplog:"3.5.0",
             glide: "4.9.0",
             disklru:"2.0.2",
-            autodisposearchcomponents:"1.0.0-RC3",
+            autodisposearchcomponents:"1.0.0-RC3"
+            ,
             autodispose:"1.0.0-RC3"
     ]
 

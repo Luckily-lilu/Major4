@@ -1,12 +1,22 @@
 package com.ll.net;
 
+import android.text.TextUtils;
+import android.util.Log;
 import android.widget.RelativeLayout;
 
+import com.ll.net.common.ConfigUrl;
+import com.ll.net.model.TokenApi;
+import com.ll.net.protocol.TokenRespEntity;
+
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -42,7 +52,7 @@ public class RetrofitManager {
      * 初始化Retrofit
      */
     private void initRetrofit(){
-        new Retrofit.Builder()
+        retrofit = new Retrofit.Builder()
                 .baseUrl(RETROFIT_BASEURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -57,8 +67,60 @@ public class RetrofitManager {
                 .writeTimeout(5, TimeUnit.SECONDS)
                 .readTimeout(5, TimeUnit.SECONDS)
                 .connectTimeout(5, TimeUnit.SECONDS)
+                .addInterceptor(createRequestInterceptor())
                 .addInterceptor(createLogIntercepter())
                 .build();
+    }
+
+    private Interceptor createRequestInterceptor() {
+        Interceptor interceptor = new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request request = chain.request();
+                Response response = chain.proceed(request);
+
+                if (checkHttp401(response)){
+                    String token = requestToken();
+                    if (TextUtils.isEmpty(token)){
+                        Log.e("Error","token is null ....");
+                    }
+                    Request.Builder newBuilder = request.newBuilder().addHeader("Authorization","bearer " + token);
+                    Request newRequest = newBuilder.build();
+
+                    return chain.proceed(newRequest);
+                }
+
+                return response;
+            }
+        };
+        return interceptor;
+    }
+
+    private String requestToken() {
+
+        TokenApi tokenApi = create(TokenApi.class);
+        Call<TokenRespEntity> tokenService = tokenApi.getToken("password", ConfigUrl.AUTHCODE, "");
+        try {
+            retrofit2.Response<TokenRespEntity> result = tokenService.execute();
+            if (result!=null&&result.body()!=null){
+                return  result.body().getAccess_token();
+            }
+        } catch (IOException e) {
+            Log.e("123",e.getMessage());
+        }
+
+        return "";
+    }
+
+    private boolean checkHttp401(Response response) {
+        if (response == null){
+            return false;
+        }
+        if (response.code() == 401){
+            return true;
+        }else {
+            return false;
+        }
     }
 
     /**
